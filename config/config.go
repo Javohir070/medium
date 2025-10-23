@@ -6,6 +6,7 @@ import (
 )
 
 type Config struct {
+	Port  string
 	Mysql Mysql
 }
 
@@ -26,6 +27,7 @@ func Load(path string) Config {
 	conf.AutomaticEnv()
     
 	cfg := Config{
+		Port: conf.GetString("PORT"),
 		Mysql: Mysql{
 			Host:     conf.GetString("MYSQL_HOST"),
 			Port:     conf.GetString("MYSQL_PORT"),
