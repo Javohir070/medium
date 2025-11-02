@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/Javohir070/medium/storage/repo"
 	"github.com/jmoiron/sqlx"
@@ -31,15 +32,42 @@ func (u *userRepo) Create(ctx context.Context, req *repo.User) (*repo.User, erro
 	return req, nil
 }
 
-// func (u *userRepo) Update(ctx context.Context, userID int, req *repo.UpdateUser) error {
-// 	query := `UPDATE users SET first_name = ?, last_name = ? WHERE id = ?`
-// 	_, err := u.db.ExecContext(ctx, query, req.FirstName, req.LastName, userID)
-// 	if err != nil {
-// 		return err
-// 	}
+func (u *userRepo) Update(ctx context.Context, req *repo.UpdateUser) error {
+	tsx, err := u.db.Begin()
+	if err != nil {
+		return err
+	}
 
-// 	return nil
-// }
+	query := `UPDATE users SET
+			first_name = ?,
+			last_name = ?
+		WHERE id = ? 
+	`
+	res, err := tsx.Exec(query, req.FirstName, req.LastName, req.ID)
+
+	if err != nil {
+		errRoll := tsx.Rollback()
+		if errRoll != nil {
+			err = errRoll
+		}
+		return err
+	}
+	data, err := res.RowsAffected()
+
+	if err != nil {
+		errRoll := tsx.Rollback()
+		if errRoll != nil {
+			err = errRoll
+		}
+		return err
+	}
+	if data == 0 {
+		tsx.Commit()
+		return sql.ErrNoRows
+	}
+
+	return tsx.Commit()
+}
 
 func (u *userRepo) Get(ctx context.Context, id string) (*repo.User, error) {
 	query := `SELECT id, first_name, last_name, email, password, created_at FROM users WHERE id = ?`

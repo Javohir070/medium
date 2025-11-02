@@ -18,8 +18,13 @@ func NewServer(opts Options) *gin.Engine {
 	})
 	router.POST("/v1/users", handler.CreateUser)
 	router.GET("/v1/user/:id", handler.GetUser)
-	// router.PUT("/v1/user/:id", handler.UpdateUser)
+	router.PUT("/v1/user/:id", handler.UpdateUser)
 	router.DELETE("/v1/user/:id", handler.DeleteUser)
+
+	router.POST("/v1/posts", handler.CreatePost)
+	router.GET("/v1/post/:id", handler.GetPost)
+	// router.PUT("/v1/post/:id", handler.UpdatePost)
+	router.DELETE("/v1/post/:id", handler.DeletePost)
 
 	return router
 }

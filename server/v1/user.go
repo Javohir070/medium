@@ -44,27 +44,28 @@ func (h *handlerV1) GetUser(ctx *gin.Context) {
 	})
 }
 
-// func (h *handlerV1) UpdateUser(ctx *gin.Context) {
-//     var req models.UpdateUser
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(400, gin.H{"error": "Invalid request"})
-// 		return
-// 	}
+func (h *handlerV1) UpdateUser(ctx *gin.Context) {
+	var req models.UpdateUser
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
 
-// 	id := ctx.Param("id")
+	id := ctx.Param("id")
 
-// 	err := h.Strg.User().Update(ctx, id, &repo.UpdateUser{
-// 		FirstName: req.FirstName,
-// 		LastName:  req.LastName,
-// 	})
+	err := h.Strg.User().Update(ctx, &repo.UpdateUser{
+		ID:        id,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+	})
 
-// 	if err != nil {
-// 		ctx.JSON(500, gin.H{"error": "Failed to update user"})
-// 		return
-// 	}
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Failed to update user"})
+		return
+	}
 
-// 	ctx.JSON(200, gin.H{"message": "User updated successfully"})
-// }
+	ctx.JSON(200, gin.H{"message": "User updated successfully"})
+}
 
 func (h *handlerV1) DeleteUser(ctx *gin.Context) {
 	id := ctx.Param("id")
